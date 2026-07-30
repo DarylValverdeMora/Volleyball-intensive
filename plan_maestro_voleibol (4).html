@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan Maestro · Retorno al Voleibol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#10131a;
+    --bg-panel:#171b24;
+    --bg-panel-2:#1d222d;
+    --border:#2a3040;
+    --text:#eef0f4;
+    --text-dim:#8b93a3;
+    --gold:#f2b134;
+    --teal:#2fa8a0;
+    --danger:#e5533d;
+    --success:#4caf7d;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  h1,h2,h3,.display{
+    font-family:'Oswald',system-ui,sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.03em;
+    font-weight:600;
+    margin:0;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:var(--gold);}
+  .app{display:grid;grid-template-columns:230px 1fr;min-height:100vh;}
+  @media (max-width:860px){ .app{grid-template-columns:1fr;} }
+
+  /* NAV */
+  nav.sidebar{
+    background:var(--bg-panel);
+    border-right:1px solid var(--border);
+    padding:20px 14px;
+    position:sticky;top:0;height:100vh;overflow-y:auto;
+  }
+  @media (max-width:860px){
+    nav.sidebar{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border);
+      display:flex;overflow-x:auto;padding:12px;gap:6px;}
+    nav.sidebar .brand{display:none;}
+  }
+  .brand{padding:6px 10px 22px 10px;}
+  .brand .k{color:var(--gold);font-family:'Oswald';font-size:12px;letter-spacing:0.18em;}
+  .brand .t{font-family:'Oswald';font-size:20px;line-height:1.15;margin-top:4px;}
+  .navbtn{
+    display:flex;align-items:center;gap:10px;
+    width:100%;text-align:left;background:none;border:none;color:var(--text-dim);
+    font-family:'Oswald';font-size:13px;letter-spacing:0.05em;text-transform:uppercase;
+    padding:10px 10px;border-radius:8px;cursor:pointer;margin-bottom:2px;white-space:nowrap;
+  }
+  .navbtn .num{font-family:'JetBrains Mono';font-size:11px;color:var(--text-dim);width:18px;flex:none;}
+  .navbtn:hover{background:var(--bg-panel-2);color:var(--text);}
+  .navbtn.active{background:var(--bg-panel-2);color:var(--gold);}
+  .navbtn.active .num{color:var(--gold);}
+
+  main{padding:28px 26px 80px;max-width:980px;}
+  @media (max-width:860px){ main{padding:18px 16px 60px;} }
+
+  .eyebrow{color:var(--gold);font-family:'Oswald';font-size:12px;letter-spacing:0.2em;margin-bottom:6px;}
+  .pagetitle{font-size:30px;margin-bottom:4px;}
+  .sub{color:var(--text-dim);font-size:14.5px;margin-bottom:26px;max-width:640px;line-height:1.5;}
+
+  .card{background:var(--bg-panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px;}
+  .card h3{font-size:16px;color:var(--gold);margin-bottom:10px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  @media (max-width:700px){ .grid2,.grid3{grid-template-columns:1fr;} }
+
+  /* SCOREBOARD */
+  .scoreboard{
+    background:linear-gradient(135deg,#1a2233,#141822);
+    border:1px solid var(--border);border-radius:var(--radius);
+    padding:22px 24px;margin-bottom:22px;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px;
+  }
+  .sb-block .k{font-family:'Oswald';font-size:11px;letter-spacing:0.18em;color:var(--text-dim);}
+  .sb-block .v{font-family:'JetBrains Mono';font-size:30px;color:var(--gold);font-weight:700;}
+  .sb-phase{font-family:'Oswald';font-size:13px;letter-spacing:0.06em;color:var(--teal);text-transform:uppercase;}
+  .datepick{background:var(--bg-panel-2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:6px 8px;font-family:'JetBrains Mono';font-size:13px;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);}
+  th{color:var(--text-dim);font-family:'Oswald';font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;font-weight:500;}
+  td.obj{color:var(--text-dim);font-size:12.5px;}
+  tr:last-child td{border-bottom:none;}
+
+  .tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .tabbtn{
+    background:var(--bg-panel);border:1px solid var(--border);color:var(--text-dim);
+    font-family:'Oswald';font-size:12.5px;letter-spacing:0.05em;text-transform:uppercase;
+    padding:8px 14px;border-radius:20px;cursor:pointer;
+  }
+  .tabbtn.active{background:var(--gold);color:#1a1408;border-color:var(--gold);}
+
+  .weekpill{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .weekpill button{
+    background:var(--bg-panel-2);border:1px solid var(--border);color:var(--text-dim);
+    font-family:'JetBrains Mono';font-size:12.5px;padding:7px 12px;border-radius:8px;cursor:pointer;
+  }
+  .weekpill button.active{background:var(--teal);color:#06201d;border-color:var(--teal);font-weight:700;}
+
+  /* WEEKLY CALENDAR */
+  .weekgrid{display:grid;grid-template-columns:110px repeat(7,1fr);gap:1px;background:var(--border);border-radius:var(--radius);overflow:hidden;font-size:12px;}
+  .weekgrid .cell{background:var(--bg-panel);padding:10px 8px;min-height:64px;}
+  .weekgrid .headcell{background:var(--bg-panel-2);font-family:'Oswald';font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:var(--gold);text-align:center;padding:10px 4px;}
+  .weekgrid .rowlabel{background:var(--bg-panel-2);font-family:'Oswald';font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-dim);display:flex;align-items:center;padding:8px;}
+  .tag{display:inline-block;font-size:10.5px;padding:2px 6px;border-radius:5px;margin-top:3px;}
+  .tag.gym{background:rgba(242,177,52,0.15);color:var(--gold);}
+  .tag.tech{background:rgba(47,168,160,0.15);color:var(--teal);}
+  .tag.team{background:rgba(229,83,61,0.15);color:#ff8b76;}
+  .tag.rest{background:rgba(140,150,170,0.15);color:var(--text-dim);}
+  @media (max-width:860px){ .weekgrid{grid-template-columns:80px repeat(7,minmax(80px,1fr));overflow-x:auto;display:grid;} main .weekgrid-wrap{overflow-x:auto;} }
+
+  /* CALENDARIO — vista por día */
+  .dayrail{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:18px;}
+  .daychip{
+    flex:none;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;
+    padding:10px 14px;cursor:pointer;text-align:center;min-width:78px;
+  }
+  .daychip .dn{font-family:'Oswald';font-size:12px;letter-spacing:0.06em;color:var(--text-dim);text-transform:uppercase;}
+  .daychip .dd{display:flex;gap:3px;justify-content:center;margin-top:6px;}
+  .daychip .dd span{width:5px;height:5px;border-radius:50%;background:var(--border);}
+  .daychip.active{border-color:var(--gold);background:rgba(242,177,52,0.08);}
+  .daychip.active .dn{color:var(--gold);}
+  .daychip.today{outline:1px solid var(--teal);}
+
+  .timeline{position:relative;padding-left:26px;}
+  .timeline:before{content:'';position:absolute;left:8px;top:6px;bottom:6px;width:1px;background:var(--border);}
+  .tl-item{position:relative;margin-bottom:14px;}
+  .tl-item:before{content:'';position:absolute;left:-26px;top:6px;width:9px;height:9px;border-radius:50%;background:var(--gold);border:2px solid var(--bg);}
+  .tl-item.team:before{background:#ff8b76;}
+  .tl-item.rest:before{background:var(--text-dim);}
+  .tl-time{font-family:'JetBrains Mono';font-size:11.5px;color:var(--text-dim);margin-bottom:3px;}
+  .tl-card{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+  .tl-card .tt{font-family:'Oswald';font-size:15px;letter-spacing:0.02em;margin-bottom:2px;}
+  .tl-card .ts{color:var(--text-dim);font-size:12.5px;line-height:1.5;}
+
+  /* CHECKLIST */
+  .checkrow{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+  .checkrow:last-child{border-bottom:none;}
+  .checkrow input[type=checkbox]{margin-top:3px;width:17px;height:17px;accent-color:var(--gold);}
+  .checkrow label{font-size:14px;line-height:1.4;flex:1;cursor:pointer;}
+  .checkrow.done label{color:var(--text-dim);text-decoration:line-through;}
+  .badge{font-family:'JetBrains Mono';font-size:11px;padding:2px 7px;border-radius:5px;background:var(--bg-panel-2);color:var(--text-dim);}
+
+  /* FORM */
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-family:'Oswald';font-size:11.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;}
+  .field input[type=range]{width:100%;accent-color:var(--gold);}
+  .field .rangeval{font-family:'JetBrains Mono';color:var(--gold);font-size:13px;}
+  .field input[type=number],.field input[type=text],.field textarea{
+    width:100%;background:var(--bg-panel-2);border:1px solid var(--border);color:var(--text);
+    border-radius:6px;padding:9px 10px;font-family:'Inter';font-size:14px;
+  }
+  .field textarea{min-height:70px;resize:vertical;}
+  .btn{
+    background:var(--gold);color:#1a1408;border:none;font-family:'Oswald';font-size:13px;
+    letter-spacing:0.05em;text-transform:uppercase;padding:11px 20px;border-radius:8px;cursor:pointer;font-weight:600;
+  }
+  .btn.secondary{background:var(--bg-panel-2);color:var(--text);border:1px solid var(--border);}
+  .toast{font-size:13px;color:var(--success);margin-left:12px;}
+
+  .hist-entry{border-bottom:1px solid var(--border);padding:10px 0;font-size:13px;}
+  .hist-entry .d{font-family:'JetBrains Mono';color:var(--gold);font-size:12px;}
+  .hist-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:4px;font-size:12px;color:var(--text-dim);}
+
+  .pain{color:var(--danger) !important;}
+  .empty{color:var(--text-dim);font-size:13px;font-style:italic;}
+
+  ul.plain{margin:0;padding-left:18px;font-size:13.5px;line-height:1.7;}
+  .flag{background:rgba(229,83,61,0.1);border:1px solid rgba(229,83,61,0.35);border-radius:8px;padding:12px 14px;font-size:13px;margin-bottom:16px;}
+  .flag b{color:#ff8b76;}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <nav class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="k">CRISTIAN · COLOCADOR</div>
+      <div class="t">PLAN MAESTRO<br>RETORNO AL VOLEIBOL</div>
+    </div>
+    <button class="navbtn" data-tab="inicio"><span class="num">01</span>Inicio</button>
+    <button class="navbtn" data-tab="calendario"><span class="num">02</span>Calendario</button>
+    <button class="navbtn" data-tab="gimnasio"><span class="num">03</span>Gimnasio</button>
+    <button class="navbtn" data-tab="tecnica"><span class="num">04</span>Técnica</button>
+    <button class="navbtn" data-tab="protocolos"><span class="num">05</span>Protocolos</button>
+    <button class="navbtn" data-tab="noneg"><span class="num">06</span>No-negociables</button>
+    <button class="navbtn" data-tab="bitacora"><span class="num">07</span>Bitácora</button>
+    <button class="navbtn" data-tab="nutricion"><span class="num">08</span>Nutrición</button>
+    <button class="navbtn" data-tab="mental"><span class="num">09</span>Mental</button>
+  </nav>
+
+  <main id="main"></main>
+</div>
+
+<script>
+/* ============ DATA ============ */
+
+const TEAM_SCHEDULE = [
+  {dia:"Lunes", items:[{h:"8:00–10:00pm", t:"Juvenil · intensidad media"}]},
+  {dia:"Martes", items:[{h:"4:00–6:00pm", t:"Juvenil"},{h:"8:00–10:00pm", t:"Juegos Nacionales · máxima prioridad"}]},
+  {dia:"Miércoles", items:[{h:"7:00–8:00pm", t:"Mejenga · baja intensidad"},{h:"8:00–10:00pm", t:"Primera División · alta intensidad"}]},
+  {dia:"Jueves", items:[{h:"Libre de equipo", t:"Técnica individual / trabajo con Daryl"}]},
+  {dia:"Viernes", items:[{h:"Noche", t:"Mejenga · baja intensidad"}]},
+  {dia:"Sábado", items:[{h:"AM", t:"Triatlón regenerativo (<1h, sin impacto)"}]},
+  {dia:"Domingo", items:[{h:"AM", t:"Triatlón suave / descanso activo"}]},
+];
+
+const WEEK_DAYS = ["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
+const DAY_CAL = {
+  Lun:{gym:"Fuerza + Potencia", team:"Juvenil (media)"},
+  Mar:{gym:"Isométricos + Core + Movilidad", team:"Juvenil + J. Nacionales (alta)"},
+  Mié:{gym:"Movilidad + Isométricos + Tren superior", team:"Mejenga + 1ª División (alta)"},
+  Jue:{gym:"Pliometría a fondo (salto)", team:"Libre — técnica individual"},
+  Vie:{gym:"Fuerza + Potencia (Full Body)", team:"Mejenga (baja)"},
+  Sáb:{gym:"Movilidad ligera / activación", team:"Triatlón regenerativo <1h"},
+  Dom:{gym:"Descanso real", team:"Triatlón suave / descanso"},
+};
+
+// series/reps arrays are indexed [Semana1, Semana2, Semana3, Semana4]
+const GYM = {
+  Lun:{
+    titulo:"Fuerza + Potencia",
+    nota:"Día fuerte de gimnasio — la práctica de esa noche es de intensidad media, así que las piernas pueden cargar.",
+    ej:[
+      {n:"Monster walk lateral con banda", o:"Activar glúteo medio — estabiliza la rodilla en el aterrizaje", s:[3,3,3,2], r:["20 pasos","20 pasos","24 pasos","16 pasos"], d:"30s"},
+      {n:"Copenhagen plank (rodilla → progresión a pierna extendida)", o:"Fuerza de aductor y cadera para desaceleración lateral", s:[3,3,3,2], r:["20s/lado","25s/lado","30s/lado","20s/lado"], d:"30s"},
+      {n:"Drop jump bajo (15–20 cm)", o:"Ciclo estiramiento-acortamiento, contacto mínimo en el suelo", s:[3,3,4,3], r:["3","4","3","3 (máx. velocidad)"], d:"90s"},
+      {n:"Lanzamiento rotacional de balón medicinal", o:"Potencia de tronco — mismo patrón que el golpe de ataque", s:[3,3,4,3], r:["4/lado","5/lado","4/lado","3/lado"], d:"60s"},
+      {n:"Bulgarian split squat", o:"Fuerza unilateral de la pierna de despegue", s:[3,3,3,2], r:["6/pierna","6/pierna","5/pierna","4/pierna"], d:"90s"},
+      {n:"Peso muerto rumano (RDL)", o:"Cadena posterior — protección de isquiotibial/rodilla", s:[3,3,3,2], r:["6","6","5","4"], d:"90s"},
+      {n:"Nordic curl asistido", o:"Fuerza excéntrica de isquiotibial (clave tras el antecedente de rodilla)", s:[3,3,3,2], r:["4","5","5","3"], d:"90s"},
+      {n:"Soleo sentado", o:"Fuerza de tobillo/Aquiles para absorber el aterrizaje", s:[3,3,3,2], r:["12","14","15","10"], d:"45s"},
+    ]
+  },
+  Mar:{
+    titulo:"Isométricos + Core + Movilidad",
+    nota:"Piernas frescas — esa noche tienes doble sesión con Juegos Nacionales. Nada de impacto fuerte hoy.",
+    ej:[
+      {n:"RFESS isométrico (rear foot elevated split squat, sostenido)", o:"Tolerancia isométrica de cuádriceps/rodilla sin impacto", s:[3,3,3,2], r:["20s","25s","30s","20s"], d:"60s"},
+      {n:"Wall sit", o:"Resistencia isométrica de cuádriceps", s:[2,3,3,2], r:["30s","40s","45s","30s"], d:"45s"},
+      {n:"Copenhagen plank isométrico completo", o:"Aductor/cadera — mismo objetivo que el lunes, sostenido", s:[3,3,3,2], r:["20s/lado","25s/lado","30s/lado","20s/lado"], d:"30s"},
+      {n:"Pallof press", o:"Anti-rotación de core — estabilidad de tronco al colocar en movimiento", s:[3,3,3,2], r:["10/lado","12/lado","12/lado","8/lado"], d:"30s"},
+      {n:"Dead bug lento", o:"Control de core sin compensar con la zona lumbar", s:[3,3,3,2], r:["8/lado","10/lado","10/lado","8/lado"], d:"30s"},
+      {n:"Movilidad de tobillo con banda", o:"Rango de dorsiflexión para un aterrizaje seguro", s:[2,2,2,2], r:["10/lado","10/lado","10/lado","10/lado"], d:"20s"},
+      {n:"Movilidad de cadera 90/90", o:"Rotación de cadera para desplazamiento y colocación", s:[2,2,2,2], r:["6/lado","6/lado","6/lado","6/lado"], d:"20s"},
+    ]
+  },
+  Mié:{
+    titulo:"Movilidad + Isométricos + Tren superior corto",
+    nota:"Mismo criterio que el martes: esa noche tienes Primera División a alta intensidad. Hoy no se toca la pierna con impacto.",
+    ej:[
+      {n:"Movilidad torácica en cuadrupedia (rotación)", o:"Rango de rotación de tronco para el golpe de ataque", s:[2,2,2,2], r:["8/lado","8/lado","8/lado","8/lado"], d:"—"},
+      {n:"Movilidad de hombro con banda (rotación externa)", o:"Salud del manguito rotador ante alto volumen de golpeo", s:[2,3,3,2], r:["12","15","15","10"], d:"30s"},
+      {n:"Isométrico nórdico (ángulo medio)", o:"Tolerancia isquiotibial sin generar fatiga acumulada", s:[2,3,3,2], r:["3x8s","3x10s","3x10s","2x8s"], d:"60s"},
+      {n:"Lanzamiento rotacional de balón medicinal (tren superior)", o:"Velocidad de brazo específica de ataque/saque", s:[3,3,3,2], r:["4/lado","5/lado","5/lado","3/lado"], d:"45s"},
+      {n:"Face pull con banda", o:"Salud de hombro ante el volumen de repetición del golpe", s:[3,3,3,2], r:["12","15","15","10"], d:"30s"},
+      {n:"Plancha lateral", o:"Estabilidad de tronco", s:[3,3,3,2], r:["20s/lado","25s/lado","30s/lado","20s/lado"], d:"30s"},
+    ]
+  },
+  Jue:{
+    titulo:"Pliometría a fondo — técnica de salto",
+    nota:"Tu día ideal: no hay equipo esa noche. Aquí va el mayor impacto neuromuscular de la semana.",
+    ej:[
+      {n:"Calentamiento + medición de salto", o:"Referencia de progreso semanal (contramovimiento y con carrera)", s:["1","1","1","1"], r:["6 min + 3 intentos","6 min + 3 intentos","6 min + 3 intentos","6 min + 3 intentos"], d:"—"},
+      {n:"Pogos", o:"Rigidez de tobillo, contacto corto en el suelo", s:[3,3,4,3], r:["15s","20s","20s","15s"], d:"60s"},
+      {n:"Snap downs", o:"Reactividad y postura de aterrizaje", s:[3,3,3,2], r:["5","5","6","4"], d:"60s"},
+      {n:"Drop jump progresivo", o:"Ciclo estiramiento-acortamiento con altura creciente", s:[3,4,4,3], r:["3 (20cm)","3 (30cm)","3 (40cm)","3 (30cm, máx. velocidad)"], d:"90s"},
+      {n:"Approach jumps (aproximación 3 pasos)", o:"Transferencia directa al salto de ataque", s:[3,4,4,3], r:["3","4","4","3"], d:"90s"},
+      {n:"Block jumps", o:"Técnica de salto de bloqueo: mínimo contacto, brazos arriba", s:[3,3,4,3], r:["4","5","5","4"], d:"60s"},
+      {n:"Aterrizajes controlados (2 y 1 pierna)", o:"Prevención — cierre siempre con calidad, no con fatiga", s:[2,2,2,2], r:["5","5","5","5"], d:"45s"},
+    ]
+  },
+  Vie:{
+    titulo:"Fuerza + Potencia (Full Body)",
+    nota:"Segundo día fuerte — la mejenga de esa noche es de baja intensidad.",
+    ej:[
+      {n:"Quarter squat + assisted repeat jump (contraste)", o:"Convertir fuerza de pierna en potencia de salto", s:[3,3,4,3], r:["3+4","3+4","3+5","2+3"], d:"90s"},
+      {n:"Chest press + plyo push up (contraste)", o:"Potencia de empuje de tren superior (bloqueo/defensa)", s:[3,3,3,2], r:["8+3","8+4","8+4","6+3"], d:"90s"},
+      {n:"Remo", o:"Salud postural de hombro y espalda alta", s:[3,3,3,2], r:["8","8","8","6"], d:"75s"},
+      {n:"Glute ham raise / nordic asistido", o:"Cadena posterior — segundo estímulo semanal de protección", s:[3,3,3,2], r:["5","6","6","4"], d:"90s"},
+      {n:"Tall plank rotation", o:"Core rotacional + estabilidad de hombro", s:[3,3,3,2], r:["10/lado","10/lado","10/lado","8/lado"], d:"30s"},
+      {n:"Soleo / tibial anterior", o:"Salud de tobillo y Aquiles", s:[2,3,3,2], r:["12","15","15","10"], d:"45s"},
+    ]
+  }
+};
+
+const PHASES = [
+  {n:1, nombre:"Adaptación", pct:"70%", desc:"Tolerancia a impactos y técnica. El objetivo no es cargar, es aprender el patrón correcto."},
+  {n:2, nombre:"Construcción", pct:"80%", desc:"Sube ligeramente el volumen y la calidad del movimiento."},
+  {n:3, nombre:"Transferencia", pct:"90%", desc:"Más específico a voleibol, series más cortas pero a máxima velocidad."},
+  {n:4, nombre:"Pico", pct:"Taper", desc:"Baja el volumen, sube la velocidad. Llegar fresco y explosivo, no cansado."},
+];
+
+const TECNICA = {
+  voleo:["Precisión de contacto (dedos, no palma)","Desplazamiento rápido antes del toque","Colocación en movimiento (sin frenar el cuerpo)"],
+  manobaja:["Plataforma estable y consistente","Dirección controlada hacia el colocador","Control de la fuerza del balón entrante"],
+  ataque:["Aproximación (ritmo de los pasos)","Penúltimo paso explosivo","Último paso — frenado y transferencia vertical","Contacto en el punto más alto","Velocidad de brazo en el golpe"]
+};
+
+const NONEG_DAILY = [
+  "Hidratación + electrolitos al despertar",
+  "Bloque técnico de balón (15–20 min, mediodía) — no se salta ni en día libre",
+  "Protocolo de activación antes de cualquier impacto (gym o práctica)",
+  "Bitácora completa al cerrar el día",
+  "Respiración / visualización antes de dormir",
+];
+const NONEG_WEEKLY = [
+  "5 sesiones de gimnasio (lunes a viernes)",
+  "Nunca combinar dos días de impacto fuerte seguidos",
+  "Jueves = único día de pliometría a fondo",
+  "Fin de semana: triatlón real y suave, <1h, sin saltos",
+];
+
+/* ============ STORAGE HELPERS ============ */
+async function storeGet(key){
+  try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; }
+  catch(e){ return null; }
+}
+async function storeSet(key,val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); return true; }
+  catch(e){ return false; }
+}
+function todayKey(){
+  const d = new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,'0')+"-"+String(d.getDate()).padStart(2,'0');
+}
+
+/* ============ APP STATE ============ */
+let currentTab = "inicio";
+let gymWeek = 1;
+let gymDay = "Lun";
+
+document.querySelectorAll('.navbtn').forEach(b=>{
+  b.addEventListener('click', ()=>{ currentTab=b.dataset.tab; render(); });
+});
+
+/* ============ RENDER ROUTER ============ */
+function render(){
+  document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active', b.dataset.tab===currentTab));
+  const main = document.getElementById('main');
+  main.innerHTML = "";
+  const fns = {inicio:renderInicio, calendario:renderCalendario, gimnasio:renderGimnasio, tecnica:renderTecnica,
+    protocolos:renderProtocolos, noneg:renderNoneg, bitacora:renderBitacora, nutricion:renderNutricion, mental:renderMental};
+  fns[currentTab]();
+}
+
+/* ============ 01 INICIO ============ */
+async function renderInicio(){
+  const main = document.getElementById('main');
+  let startDate = await storeGet('plan_start_date');
+
+  main.innerHTML = `
+    <div class="eyebrow">Marcador</div>
+    <div class="scoreboard" id="scoreboard"></div>
+
+    <div class="eyebrow">Sistema de retorno · 4 semanas</div>
+    <h1 class="pagetitle">Plan Maestro de Retorno al Voleibol</h1>
+    <div class="sub">Colocador · adaptación a atacante/opuesto. Objetivo: Juegos Nacionales, universidad y Primera División. El gimnasio sirve al voleibol — nunca compite con él.</div>
+
+    <div class="grid3">
+      <div class="card"><h3>Perfil</h3>
+        <table>
+          <tr><td>Altura</td><td class="mono">1.83 m</td></tr>
+          <tr><td>Peso</td><td class="mono">78 kg</td></tr>
+          <tr><td>Salto actual</td><td class="mono">≈3.20 m</td></tr>
+          <tr><td>Posición</td><td>Colocador / opuesto</td></tr>
+        </table>
+      </div>
+      <div class="card"><h3>Prioridades</h3>
+        <ul class="plain"><li>Técnica de voleibol</li><li>Desbloquear el salto</li><li>Fuerza → potencia</li><li>Estabilidad y prevención</li></ul>
+      </div>
+      <div class="card"><h3>Antecedente a vigilar</h3>
+        <div class="flag" style="margin-bottom:0;"><b>Rodilla izquierda (posterior)</b> — sin dolor actualmente, fue algo puntual. Se monitorea igual en la bitácora todos los días: no se ignora solo porque no duela hoy.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Fecha de inicio del bloque</h3>
+      <div class="sub" style="margin-bottom:10px;">Defínela una vez — el marcador de arriba calcula automáticamente en qué semana y fase estás.</div>
+      <input type="date" class="datepick" id="startdate" value="${startDate||''}">
+    </div>
+
+    <div class="card">
+      <h3>Progresión de las 4 semanas</h3>
+      <table>
+        <tr><th>Semana</th><th>Fase</th><th>Intensidad</th><th>Idea</th></tr>
+        ${PHASES.map(p=>`<tr><td class="mono">S${p.n}</td><td>${p.nombre}</td><td class="mono">${p.pct}</td><td class="obj">${p.desc}</td></tr>`).join('')}
+      </table>
+    </div>
+  `;
+
+  document.getElementById('startdate').addEventListener('change', async (e)=>{
+    await storeSet('plan_start_date', e.target.value);
+    drawScoreboard();
+  });
+
+  drawScoreboard();
+
+  async function drawScoreboard(){
+    const sd = await storeGet('plan_start_date');
+    const sb = document.getElementById('scoreboard');
+    if(!sd){
+      sb.innerHTML = `<div class="sb-block"><div class="k">ESTADO</div><div class="sb-phase" style="font-size:16px;">Define tu fecha de inicio abajo para activar el marcador ↓</div></div>`;
+      return;
+    }
+    const start = new Date(sd+"T00:00:00");
+    const now = new Date();
+    const diffDays = Math.floor((now-start)/(1000*60*60*24));
+    const week = Math.min(4, Math.max(1, Math.floor(diffDays/7)+1));
+    const dayNum = Math.min(28, Math.max(1, diffDays+1));
+    const phase = PHASES[week-1];
+    sb.innerHTML = `
+      <div class="sb-block"><div class="k">DÍA</div><div class="v">${dayNum} / 28</div></div>
+      <div class="sb-block"><div class="k">SEMANA</div><div class="v">${week} / 4</div></div>
+      <div class="sb-block"><div class="k">FASE</div><div class="sb-phase">${phase.nombre} · ${phase.pct}</div></div>
+    `;
+  }
+}
+
+/* ============ 02 CALENDARIO ============ */
+function renderCalendario(){
+  const main = document.getElementById('main');
+  main.innerHTML = `
+    <div class="eyebrow">Semana tipo</div>
+    <h1 class="pagetitle">Calendario Semanal</h1>
+    <div class="sub">Mañana = gimnasio · Mediodía = mecanización con balón (sin fatiga de equipo) · Noche = práctica o triatlón.</div>
+
+    <div class="weekgrid-wrap">
+    <div class="weekgrid">
+      <div class="headcell">Bloque</div>
+      ${WEEK_DAYS.map(d=>`<div class="headcell">${d}</div>`).join('')}
+
+      <div class="rowlabel">7:00am</div>
+      ${WEEK_DAYS.map(()=>`<div class="cell">Hidratación · electrolitos · luz solar · movilidad<span class="tag rest">Despertar</span></div>`).join('')}
+
+      <div class="rowlabel">Mañana</div>
+      ${WEEK_DAYS.map(d=>`<div class="cell">${DAY_CAL[d].gym}<span class="tag gym">Gimnasio</span></div>`).join('')}
+
+      <div class="rowlabel">12:00–12:20pm</div>
+      ${WEEK_DAYS.map(d=> d==='Sáb'||d==='Dom' ? `<div class="cell">—<span class="tag rest">Libre</span></div>` : `<div class="cell">Voleo · mano baja · mecánica de ataque<span class="tag tech">Técnica</span></div>`).join('')}
+
+      <div class="rowlabel">Noche</div>
+      ${WEEK_DAYS.map(d=>`<div class="cell">${DAY_CAL[d].team}<span class="tag team">Equipo</span></div>`).join('')}
+    </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <h3>Horario real de equipo (referencia)</h3>
+      <table>
+        <tr><th>Día</th><th>Horario</th><th>Sesión</th></tr>
+        ${TEAM_SCHEDULE.map(d=>d.items.map((it,i)=>`<tr><td>${i===0?d.dia:''}</td><td class="mono">${it.h}</td><td>${it.t}</td></tr>`).join('')).join('')}
+      </table>
+    </div>
+  `;
+}
+
+/* ============ 03 GIMNASIO ============ */
+function renderGimnasio(){
+  const main = document.getElementById('main');
+  const days = Object.keys(GYM);
+  const dayData = GYM[gymDay];
+  main.innerHTML = `
+    <div class="eyebrow">Mañanas · 75+ min</div>
+    <h1 class="pagetitle">Gimnasio</h1>
+    <div class="sub">Selecciona semana y día. Los números escalan con la fase del bloque (adaptación → pico).</div>
+
+    <div class="weekpill" id="weekpill">
+      ${[1,2,3,4].map(w=>`<button data-w="${w}" class="${w===gymWeek?'active':''}">SEMANA ${w}</button>`).join('')}
+    </div>
+    <div class="tabs" id="daytabs">
+      ${days.map(d=>`<button data-d="${d}" class="tabbtn ${d===gymDay?'active':''}">${d}</button>`).join('')}
+    </div>
+
+    <div class="card">
+      <h3>${dayData.titulo}</h3>
+      <div class="sub" style="margin-bottom:14px;">${dayData.nota}</div>
+      <table>
+        <tr><th>Ejercicio</th><th>Series</th><th>Reps / Tiempo</th><th>Descanso</th></tr>
+        ${dayData.ej.map(e=>`
+          <tr>
+            <td>${e.n}<div class="obj">${e.o}</div></td>
+            <td class="mono">${e.s[gymWeek-1]}</td>
+            <td class="mono">${e.r[gymWeek-1]}</td>
+            <td class="mono">${e.d}</td>
+          </tr>`).join('')}
+      </table>
+    </div>
+  `;
+  document.querySelectorAll('#weekpill button').forEach(b=>b.addEventListener('click',()=>{gymWeek=parseInt(b.dataset.w);renderGimnasio();}));
+  document.querySelectorAll('#daytabs button').forEach(b=>b.addEventListener('click',()=>{gymDay=b.dataset.d;renderGimnasio();}));
+}
+
+/* ============ 04 TÉCNICA ============ */
+function renderTecnica(){
+  const main = document.getElementById('main');
+  main.innerHTML = `
+    <div class="eyebrow">Mediodía · 15–20 min</div>
+    <h1 class="pagetitle">Técnica Diaria</h1>
+    <div class="sub">Mecanización pura con balón, separada de la práctica de equipo — sin fatiga ni presión táctica encima. Calidad, no volumen.</div>
+
+    <div class="grid3">
+      <div class="card"><h3>Voleo</h3><ul class="plain">${TECNICA.voleo.map(t=>`<li>${t}</li>`).join('')}</ul></div>
+      <div class="card"><h3>Mano baja</h3><ul class="plain">${TECNICA.manobaja.map(t=>`<li>${t}</li>`).join('')}</ul></div>
+      <div class="card"><h3>Ataque</h3><ul class="plain">${TECNICA.ataque.map(t=>`<li>${t}</li>`).join('')}</ul></div>
+    </div>
+
+    <div class="card">
+      <h3>Estudio de colocadores internacionales</h3>
+      <div class="sub" style="margin-bottom:10px;">Japón · Francia · Italia · Estados Unidos · Argentina. No es solo ver partidos — analiza posición inicial, movimiento de pies, llegada al balón, uso de piernas, lectura de bloqueo, toma de decisiones, liderazgo.</div>
+      <div class="field"><label>Notas de la sesión de estudio de hoy</label><textarea id="scoutnotes" placeholder="Jugador observado, qué copio, qué ajusto..."></textarea></div>
+      <button class="btn" id="savescout">Guardar nota</button><span class="toast" id="scouttoast"></span>
+      <div id="scouthist" style="margin-top:16px;"></div>
+    </div>
+  `;
+  loadScout();
+  document.getElementById('savescout').addEventListener('click', saveScout);
+}
+async function saveScout(){
+  const val = document.getElementById('scoutnotes').value.trim();
+  if(!val) return;
+  const list = (await storeGet('scouting_notes')) || [];
+  list.unshift({date: todayKey(), text: val});
+  await storeSet('scouting_notes', list.slice(0,30));
+  document.getElementById('scoutnotes').value='';
+  document.getElementById('scouttoast').textContent = 'Guardado ✓';
+  setTimeout(()=>document.getElementById('scouttoast').textContent='',1500);
+  loadScout();
+}
+async function loadScout(){
+  const list = (await storeGet('scouting_notes')) || [];
+  const el = document.getElementById('scouthist');
+  if(!list.length){ el.innerHTML = '<div class="empty">Sin notas todavía.</div>'; return; }
+  el.innerHTML = list.slice(0,6).map(n=>`<div class="hist-entry"><span class="d">${n.date}</span> — ${n.text}</div>`).join('');
+}
+
+/* ============ 05 PROTOCOLOS ============ */
+function renderProtocolos(){
+  const main = document.getElementById('main');
+  main.innerHTML = `
+    <div class="eyebrow">Referencia diaria</div>
+    <h1 class="pagetitle">Protocolos</h1>
+
+    <div class="grid2">
+      <div class="card"><h3>Al despertar · 7:00am</h3><ul class="plain">
+        <li>Hidratación con electrolitos</li><li>Luz solar</li><li>Respiración</li><li>Movilidad general</li><li>Activación de glúteo, core y tobillo</li>
+      </ul></div>
+      <div class="card"><h3>Antes de entrenar (gym o práctica)</h3><ul class="plain">
+        <li>Tobillo — rotaciones con banda</li><li>Rodilla — activación de cuádriceps/isquios</li><li>Cadera — 90/90, monster walk</li><li>Glúteo — puente, activación</li><li>Core — dead bug, plancha corta</li><li>Hombro — rotación externa con banda</li>
+      </ul></div>
+      <div class="card"><h3>Después de entrenar</h3><ul class="plain">
+        <li>Hidratación</li><li>Comida con proteína</li><li>Movilidad / enfriamiento</li>
+      </ul></div>
+      <div class="card"><h3>Antes de dormir</h3><ul class="plain">
+        <li>Ducha caliente</li><li>Respiración</li><li>Visualización / método Silva</li><li>Preparar el día siguiente</li>
+      </ul></div>
+    </div>
+  `;
+}
+
+/* ============ 06 NO-NEGOCIABLES ============ */
+async function renderNoneg(){
+  const main = document.getElementById('main');
+  const key = 'checklist:'+todayKey();
+  const saved = (await storeGet(key)) || {};
+
+  main.innerHTML = `
+    <div class="eyebrow">Hoy · ${todayKey()}</div>
+    <h1 class="pagetitle">No-negociables</h1>
+    <div class="sub">Se marcan todos los días — incluso el jueves libre y el fin de semana. No compiten con el resto del plan: son la base.</div>
+
+    <div class="card"><h3>Diarios</h3>
+      ${NONEG_DAILY.map((t,i)=>checkrow('d'+i,t,saved)).join('')}
+    </div>
+    <div class="card"><h3>Semanales</h3>
+      ${NONEG_WEEKLY.map((t,i)=>checkrow('w'+i,t,saved)).join('')}
+    </div>
+  `;
+  function checkrow(id,text,saved){
+    const done = !!saved[id];
+    return `<div class="checkrow ${done?'done':''}"><input type="checkbox" id="chk_${id}" ${done?'checked':''}><label for="chk_${id}">${text}</label></div>`;
+  }
+  document.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+    cb.addEventListener('change', async ()=>{
+      const id = cb.id.replace('chk_','');
+      const data = (await storeGet(key)) || {};
+      data[id] = cb.checked;
+      await storeSet(key, data);
+      cb.closest('.checkrow').classList.toggle('done', cb.checked);
+    });
+  });
+}
+
+/* ============ 07 BITÁCORA ============ */
+async function renderBitacora(){
+  const main = document.getElementById('main');
+  const key = 'bitacora:'+todayKey();
+  const saved = (await storeGet(key)) || {sueno:8,energia:7,rodilla:0,tobillo:0,hombro:0,fatiga:4,salto:7,balon:7,aprendizaje:'',ajuste:''};
+
+  main.innerHTML = `
+    <div class="eyebrow">Hoy · ${todayKey()}</div>
+    <h1 class="pagetitle">Bitácora</h1>
+    <div class="sub">Se llena una vez al día, al cerrar. El dolor de rodilla se vigila siempre, aunque hoy esté en cero.</div>
+
+    <div class="card">
+      <div class="grid2">
+        <div class="field"><label>Horas de sueño</label><input type="number" id="sueno" min="0" max="12" step="0.5" value="${saved.sueno}"></div>
+        <div class="field"><label>Energía (1–10) <span class="rangeval" id="v_energia">${saved.energia}</span></label><input type="range" id="energia" min="1" max="10" value="${saved.energia}"></div>
+        <div class="field"><label>Dolor de rodilla (0–10) <span class="rangeval" id="v_rodilla">${saved.rodilla}</span></label><input type="range" id="rodilla" min="0" max="10" value="${saved.rodilla}"></div>
+        <div class="field"><label>Dolor de tobillo (0–10) <span class="rangeval" id="v_tobillo">${saved.tobillo}</span></label><input type="range" id="tobillo" min="0" max="10" value="${saved.tobillo}"></div>
+        <div class="field"><label>Dolor de hombro (0–10) <span class="rangeval" id="v_hombro">${saved.hombro}</span></label><input type="range" id="hombro" min="0" max="10" value="${saved.hombro}"></div>
+        <div class="field"><label>Fatiga (1–10) <span class="rangeval" id="v_fatiga">${saved.fatiga}</span></label><input type="range" id="fatiga" min="1" max="10" value="${saved.fatiga}"></div>
+        <div class="field"><label>Sensación de salto (1–10) <span class="rangeval" id="v_salto">${saved.salto}</span></label><input type="range" id="salto" min="1" max="10" value="${saved.salto}"></div>
+        <div class="field"><label>Sensación con balón (1–10) <span class="rangeval" id="v_balon">${saved.balon}</span></label><input type="range" id="balon" min="1" max="10" value="${saved.balon}"></div>
+      </div>
+      <div class="field"><label>Aprendizaje técnico de hoy</label><textarea id="aprendizaje">${saved.aprendizaje}</textarea></div>
+      <div class="field"><label>Ajuste para mañana</label><textarea id="ajuste">${saved.ajuste}</textarea></div>
+      <button class="btn" id="savebit">Guardar bitácora de hoy</button><span class="toast" id="bittoast"></span>
+    </div>
+
+    <div class="card">
+      <h3>Historial reciente</h3>
+      <div id="bithist"></div>
+    </div>
+  `;
+
+  ['energia','rodilla','tobillo','hombro','fatiga','salto','balon'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', e=>{
+      document.getElementById('v_'+id).textContent = e.target.value;
+    });
+  });
+
+  document.getElementById('savebit').addEventListener('click', async ()=>{
+    const data = {
+      sueno: document.getElementById('sueno').value,
+      energia: document.getElementById('energia').value,
+      rodilla: document.getElementById('rodilla').value,
+      tobillo: document.getElementById('tobillo').value,
+      hombro: document.getElementById('hombro').value,
+      fatiga: document.getElementById('fatiga').value,
+      salto: document.getElementById('salto').value,
+      balon: document.getElementById('balon').value,
+      aprendizaje: document.getElementById('aprendizaje').value,
+      ajuste: document.getElementById('ajuste').value,
+    };
+    await storeSet(key, data);
+    document.getElementById('bittoast').textContent = 'Guardado ✓';
+    setTimeout(()=>document.getElementById('bittoast').textContent='',1500);
+    loadBitHistory();
+  });
+
+  loadBitHistory();
+}
+
+async function loadBitHistory(){
+  const el = document.getElementById('bithist');
+  if(!el) return;
+  let keys = [];
+  try{
+    for(let i=0;i<localStorage.length;i++){
+      const k = localStorage.key(i);
+      if(k && k.indexOf('bitacora:')===0) keys.push(k);
+    }
+  }catch(e){ keys=[]; }
+  if(!keys.length){ el.innerHTML='<div class="empty">Sin registros todavía.</div>'; return; }
+  keys.sort().reverse();
+  const rows = [];
+  for(const k of keys.slice(0,10)){
+    const d = await storeGet(k);
+    if(d) rows.push({date:k.replace('bitacora:',''), ...d});
+  }
+  el.innerHTML = rows.map(r=>`
+    <div class="hist-entry">
+      <span class="d">${r.date}</span>
+      <div class="hist-grid">
+        <div>Sueño: <b>${r.sueno}h</b></div>
+        <div>Energía: <b>${r.energia}/10</b></div>
+        <div class="${r.rodilla>3?'pain':''}">Rodilla: <b>${r.rodilla}/10</b></div>
+        <div class="${r.tobillo>3?'pain':''}">Tobillo: <b>${r.tobillo}/10</b></div>
+        <div class="${r.hombro>3?'pain':''}">Hombro: <b>${r.hombro}/10</b></div>
+        <div>Fatiga: <b>${r.fatiga}/10</b></div>
+        <div>Salto: <b>${r.salto}/10</b></div>
+        <div>Balón: <b>${r.balon}/10</b></div>
+      </div>
+    </div>`).join('');
+}
+
+/* ============ 08 NUTRICIÓN ============ */
+function renderNutricion(){
+  const main = document.getElementById('main');
+  main.innerHTML = `
+    <div class="eyebrow">Combustible</div>
+    <h1 class="pagetitle">Nutrición</h1>
+
+    <div class="card"><h3>Reglas generales</h3><ul class="plain">
+      <li>Calcula tus calorías diarias según tu carga real de la semana</li>
+      <li>1.6–2.2 g de proteína por kg de peso corporal (≈125–170 g/día a 78 kg)</li>
+      <li>Carbohidratos mayormente complejos: vegetales, frutas, avena, granos</li>
+      <li>Distribución aproximada: 25–30% proteína · 50% carbohidratos · 20–25% grasas</li>
+      <li>Comida chatarra: máximo 1–2 veces por semana</li>
+      <li>Mínimo 1.5 litros de agua al día</li>
+      <li>Nunca saltarse una comida</li>
+      <li>Proteína siempre después de entrenar</li>
+    </ul></div>
+
+    <div class="grid2">
+      <div class="card"><h3>Desayuno</h3><div class="sub">Lo antes posible al despertar — muchas horas sin nutrientes.</div><ul class="plain"><li>Fruta</li><li>Proteína (huevos, yogurt, queso bajo en grasa, pavo)</li><li>Carbohidrato (pan, granola, avena)</li><li>Multivitamínico</li></ul></div>
+      <div class="card"><h3>Almuerzo</h3><ul class="plain"><li>Vegetales verdes</li><li>Proteína (pescado o pollo preferible)</li><li>Arroz, pasta o papa</li><li>Fruta</li></ul></div>
+      <div class="card"><h3>Merienda</h3><div class="sub">1–2 veces al día, una preferiblemente post-entreno.</div><ul class="plain"><li>Batido de proteína o barra proteica</li><li>Yogurt alto en proteína</li><li>Atún/sardinas con galletas</li></ul></div>
+      <div class="card"><h3>Cena</h3><ul class="plain"><li>Vegetales y proteína en mayoría</li><li>Carbohidrato solo si falta llegar al total calórico</li></ul></div>
+    </div>
+  `;
+}
+
+/* ============ 09 MENTAL ============ */
+function renderMental(){
+  const main = document.getElementById('main');
+  main.innerHTML = `
+    <div class="eyebrow">Entrena tu cerebro</div>
+    <h1 class="pagetitle">Mental</h1>
+
+    <div class="grid2">
+      <div class="card"><h3>Respiración</h3>
+        <div class="sub">4–5 veces/semana · 10 min. Libera el estrés de competencia y del día a día.</div>
+        <ul class="plain"><li>Sitio silencioso, temporizador de 10 min</li><li>3–5 respiraciones profundas con ojos abiertos</li><li>Cierra los ojos, escanea el cuerpo de cabeza a pies</li><li>Cuenta cada respiración del 1 al 10 y reinicia</li><li>Si la mente se distrae: "estoy pensando", suelta y retoma</li></ul>
+      </div>
+      <div class="card"><h3>Visualización</h3>
+        <div class="sub">4–5 veces/semana · 10 min. Complementa (no reemplaza) el entrenamiento físico.</div>
+        <ul class="plain"><li>Recrea el entorno de juego con detalle: piso, balón, red, jugadores</li><li>En primera persona, tiempo real (ni cámara lenta ni rápida)</li><li>Repite una acción varias veces antes de rotar a otra</li><li>Cierra estirando el cuerpo y notando el contraste</li></ul>
+      </div>
+    </div>
+
+    <div class="card"><h3>Durante partidos y entrenamientos</h3>
+      <ul class="plain"><li>Angustia o mente dispersa → enfócate en tu respiración</li><li>En pausas, cuenta tus latidos hasta que pite el árbitro</li><li>Describe un punto u objeto de la cancha: textura, forma, color</li></ul>
+    </div>
+
+    <div class="card">
+      <h3>Temporizador de 10 min</h3>
+      <div id="timerdisplay" class="mono" style="font-size:40px;color:var(--gold);margin-bottom:10px;">10:00</div>
+      <button class="btn" id="starttimer">Iniciar</button>
+      <button class="btn secondary" id="resettimer">Reiniciar</button>
+    </div>
+  `;
+  let seconds = 600, interval=null;
+  const disp = document.getElementById('timerdisplay');
+  function draw(){ const m=Math.floor(seconds/60), s=seconds%60; disp.textContent = String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'); }
+  document.getElementById('starttimer').addEventListener('click', ()=>{
+    if(interval) return;
+    interval = setInterval(()=>{ seconds--; draw(); if(seconds<=0){ clearInterval(interval); interval=null; } },1000);
+  });
+  document.getElementById('resettimer').addEventListener('click', ()=>{
+    clearInterval(interval); interval=null; seconds=600; draw();
+  });
+}
+
+/* ============ INIT ============ */
+render();
+</script>
+</body>
+</html>
